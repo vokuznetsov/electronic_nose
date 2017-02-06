@@ -24,3 +24,13 @@ def model():
     for _ in range(1000):
         batch_xs, batch_ys = mnist.train.next_batch(100)
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+
+def get_train_data():
+    train = parser.get_all_standard_data()
+    return train
+
+
+d = get_train_data()
+
+print 'smth'
