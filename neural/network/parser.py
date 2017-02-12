@@ -1,8 +1,8 @@
 # coding=utf-8
 import xlrd
 import numpy as np
-from os import listdir
-from os.path import isfile, join
+from os import listdir, makedirs
+from os.path import isfile, join, exists
 from PIL import Image
 
 PATH_TO_DIR = './resource'
@@ -63,7 +63,8 @@ def get_standard_measurement(date, substance, measurement):
     file_name = PATH_TO_DIR + '/standard/' + DATE[date] + SPLIT_SYMBOL + SUBSTANCE[substance] \
                 + SPLIT_SYMBOL + MEASUREMENT[measurement]
     standard = parser(file_name, is_standard=True)
-    print(standard)
+    create_image_from_array(standard, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
+    # print(standard)
     print '\nFILE NAME: ' + file_name[START_NAME:]
     return standard
 
@@ -137,18 +138,21 @@ def get_list_of_files_in_dir(path_to_dir, isprint):
     return only_files
 
 
-def create_image_from_array(array):
-    # array = np.zeros((6, 119))
-    # values = []
-    #
-    # for i in range(0, 119):
-    #     values.append(200.0)
-    #
-    # array = np.vstack((array, values))
+def create_image_from_array(array, date, substance, measurement):
+
+    path = PATH_TO_DIR + SPLIT_SYMBOL + 'standard/images' + SPLIT_SYMBOL
+
+    if not exists(path + date):
+        makedirs(path + date)
+
+    if not exists(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance):
+        makedirs(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance)
+
     formatted = (array * 255 / np.max(array)).astype('uint8')
 
     img = Image.fromarray(formatted, 'L')
-    img.save('./visualization/my.png')
+    # img.save(str(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance + SPLIT_SYMBOL + measurement) + '.png')
+    img.save(str(path + SPLIT_SYMBOL + 'all' + SPLIT_SYMBOL + substance + '-' + date + '-' + measurement) + '.png')
     # img.show()
 
 # standard = get_standard_measurement(1, 3, 1)
