@@ -76,15 +76,16 @@ def get_standard_measurement(date, substance, measurement):
     file_name = PATH_TO_DIR + STANDARD_DATA + DATE[date] + SPLIT_SYMBOL + SUBSTANCE[substance] \
                 + SPLIT_SYMBOL + MEASUREMENT[measurement]
     standard = parser(file_name, is_standard=True)
-    create_image_from_array(standard, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
+    create_image_from_array(standard, True, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
     # print(standard)
     print '\nFILE NAME: ' + file_name[START_NAME:]
     return standard
 
 
 def get_other_measurement(file_name):
-    path_to_file = PATH_TO_DIR + NON_STANDARD_DATA + file_name
+    path_to_file = PATH_TO_DIR + NON_STANDARD_DATA + 'data/' + file_name
     other = parser(path_to_file, is_standard=False)
+    create_image_from_array(array=other, is_standard=False, filename=file_name)
     # print('\n' + str(other))
     print '\nFILE NAME: ' + path_to_file
     return other
@@ -160,7 +161,7 @@ def get_all_standard_data(is_reformat=False):
 
 def get_all_non_standard_data(is_reformat=False):
     data = []
-    NON_STANDARD_DIR = PATH_TO_DIR + NON_STANDARD_DATA
+    NON_STANDARD_DIR = PATH_TO_DIR + NON_STANDARD_DATA + 'data/'
     list_of_files = get_list_of_files_in_dir(NON_STANDARD_DIR)
 
     for f in list_of_files:
@@ -173,21 +174,28 @@ def get_all_non_standard_data(is_reformat=False):
     return data
 
 
-def create_image_from_array(array, date, substance, measurement):
-    path = PATH_TO_DIR + SPLIT_SYMBOL + 'standard/images' + SPLIT_SYMBOL
-
-    if not exists(path + date):
-        makedirs(path + date)
-
-    if not exists(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance):
-        makedirs(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance)
-
+def create_image_from_array(array, is_standard=False, date=None, substance=None, measurement=None, filename=None):
     formatted = (array * 255 / np.max(array)).astype('uint8')
-
     img = Image.fromarray(formatted, 'L')
-    # img.save(str(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance + SPLIT_SYMBOL + measurement) + '.png')
-    img.save(str(path + SPLIT_SYMBOL + 'all' + SPLIT_SYMBOL + substance + '-' + date + '-' + measurement) + '.png')
-    # img.show()
+
+    if is_standard:
+        path = PATH_TO_DIR + SPLIT_SYMBOL + STANDARD_DATA + 'images' + SPLIT_SYMBOL
+
+        if not exists(path + date):
+            makedirs(path + date)
+        if not exists(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance):
+            makedirs(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance)
+        if not exists(path + 'all'):
+            makedirs(path + 'all')
+
+        img.save(str(path + SPLIT_SYMBOL + date + SPLIT_SYMBOL + substance + SPLIT_SYMBOL + measurement) + '.png')
+        img.save(str(path + SPLIT_SYMBOL + 'all' + SPLIT_SYMBOL + substance + '-' + date + '-' + measurement)
+                 + '.png')
+    else:
+        path = PATH_TO_DIR + SPLIT_SYMBOL + NON_STANDARD_DATA + 'images' + SPLIT_SYMBOL
+        if not exists(path + 'all'):
+            makedirs(path + 'all')
+        img.save(str(path + SPLIT_SYMBOL + 'all' + SPLIT_SYMBOL + filename) + '.png')
 
 # standard = get_standard_measurement(1, 3, 1)
 # file_list = get_list_of_files_in_dir(PATH_TO_DIR, False)
