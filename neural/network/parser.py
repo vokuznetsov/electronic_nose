@@ -76,7 +76,7 @@ def get_standard_measurement(date, substance, measurement):
     file_name = PATH_TO_DIR + STANDARD_DATA + DATE[date] + SPLIT_SYMBOL + SUBSTANCE[substance] \
                 + SPLIT_SYMBOL + MEASUREMENT[measurement]
     standard = parser(file_name, is_standard=True)
-    create_image_from_array(standard, True, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
+    # create_image_from_array(standard, True, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
     # print(standard)
     print '\nFILE NAME: ' + file_name[START_NAME:]
     return standard
@@ -85,7 +85,7 @@ def get_standard_measurement(date, substance, measurement):
 def get_other_measurement(file_name):
     path_to_file = PATH_TO_DIR + NON_STANDARD_DATA + 'data/' + file_name
     other = parser(path_to_file, is_standard=False)
-    create_image_from_array(array=other, is_standard=False, filename=file_name)
+    # create_image_from_array(array=other, is_standard=False, filename=file_name)
     # print('\n' + str(other))
     print '\nFILE NAME: ' + path_to_file
     return other
