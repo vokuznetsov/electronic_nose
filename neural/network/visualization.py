@@ -1,10 +1,11 @@
 import parser
 
-for d in range(0, len(parser.DATE)):
-    for s in range(0, len(parser.SUBSTANCE)):
-        for m in range(0, len(parser.MEASUREMENT)):
-            parser.get_standard_measurement(d, s, m)
 
+standard_data = parser.get_all_standard_data()
+non_stadard_data = parser.get_all_non_standard_data()
+
+print len(standard_data)
+print len(non_stadard_data)
 
 # array = parser.get_standard_measurement(1, 5, 2)
 

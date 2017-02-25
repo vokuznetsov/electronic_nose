@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     y_ = tf.placeholder(tf.float32, [None, 10])
 
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))
+    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 

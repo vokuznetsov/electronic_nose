@@ -5,16 +5,25 @@ from os import listdir, makedirs
 from os.path import isfile, join, exists
 from PIL import Image
 
+MAX_VALUE = -32000
 PATH_TO_DIR = './resource'
+STANDARD_DATA = '/standard/'
+NON_STANDARD_DATA = '/non_standard/'
 SPLIT_SYMBOL = '/'
 
 # standard resource folder contains only measurement with 6 sensors
 SENSORS_STANDARD = ["Прополис", "МУНТ", "ПЭГ-2000", "ТОФО", "Тритон", "ДЦГ-18К6", "ПЭГС", "ПФЭ", "ПЭГСб", "ПЭГФ"]
 
-DATE = ['29.04.16', '03.05.16']
+DATE = ['29.04.16', '03.05.16-4', '03.05.16-6', '04.05.16']
 SUBSTANCE = ['acetaldehyde', 'acetone', 'butanol-1', 'butanol-2', 'ethanol', 'MEK',
              'propanol-1', 'propanol-2', 'toluene']
 MEASUREMENT = ['measurement-1.xlsx', 'measurement-2.xlsx', 'measurement-3.xlsx']
+
+
+def is_max(elem):
+    global MAX_VALUE
+    if MAX_VALUE < elem:
+        MAX_VALUE = elem
 
 
 # parse standard measurement
@@ -34,19 +43,23 @@ def parser(path_to_file, is_standard):
 
             if is_standard:
                 for elem in workbook.sheet_by_index(0).col(START_COLUMN_STANDARD + index):
+                    is_max(elem.value)
                     values.append(elem.value)
             else:
                 for elem in workbook.sheet_by_index(0).col(START_COLUMN_OTHER + index):
                     count += 1
                     if count > START_ROW_OTHER:
+                        is_max(elem.value)
                         values.append(elem.value)
+
+            # Neural network take a matrix with 120 rows so it is necessary to add additional rows with 0 value
+            # in order to get a vector with size 120x1.
+            for i in range(len(values), 120):
+                values.append(0)
         else:
-            # so we should have a matrix with size 119x8, we should add a zeros vector with size (119x1)
+            # so we should have a matrix with size 120x10, we should add a zeros vector with size (120x1)
             # zeros vectors because the sensors is not contained in SENSORS_STANDARD
-            if is_standard:
-                values = np.zeros(119)
-            else:
-                values = np.zeros(61)
+            values = np.zeros(120)
 
         if len(arr) == 0:
             arr = np.array(values)
@@ -60,7 +73,7 @@ def parser(path_to_file, is_standard):
 
 def get_standard_measurement(date, substance, measurement):
     START_NAME = 29
-    file_name = PATH_TO_DIR + '/standard/' + DATE[date] + SPLIT_SYMBOL + SUBSTANCE[substance] \
+    file_name = PATH_TO_DIR + STANDARD_DATA + DATE[date] + SPLIT_SYMBOL + SUBSTANCE[substance] \
                 + SPLIT_SYMBOL + MEASUREMENT[measurement]
     standard = parser(file_name, is_standard=True)
     create_image_from_array(standard, DATE[date], SUBSTANCE[substance], MEASUREMENT[measurement][-6])
@@ -70,9 +83,9 @@ def get_standard_measurement(date, substance, measurement):
 
 
 def get_other_measurement(file_name):
-    path_to_file = PATH_TO_DIR + SPLIT_SYMBOL + file_name
+    path_to_file = PATH_TO_DIR + NON_STANDARD_DATA + file_name
     other = parser(path_to_file, is_standard=False)
-    print('\n' + str(other))
+    # print('\n' + str(other))
     print '\nFILE NAME: ' + path_to_file
     return other
 
@@ -114,19 +127,7 @@ def reformat_measurement(measurement):
     return result
 
 
-def get_all_standard_data():
-    data = []
-
-    for d in range(0, len(DATE)):
-        print DATE[d]
-        for s in range(0, len(SUBSTANCE)):
-            for m in range(0, len(MEASUREMENT)):
-                st = get_standard_measurement(d, s, m)
-                data.append(reformat_measurement(st))
-    return data
-
-
-def get_list_of_files_in_dir(path_to_dir, isprint):
+def get_list_of_files_in_dir(path_to_dir, isprint=False):
     only_files = [f for f in listdir(path_to_dir) if isfile(join(path_to_dir, f))]
 
     if isprint:
@@ -138,8 +139,41 @@ def get_list_of_files_in_dir(path_to_dir, isprint):
     return only_files
 
 
-def create_image_from_array(array, date, substance, measurement):
+def get_all_standard_data(is_reformat=False):
+    data = []
 
+    for d in range(0, len(DATE)):
+        print DATE[d]
+        for s in range(0, len(SUBSTANCE)):
+            for m in range(0, len(MEASUREMENT)):
+                # 03.05.16-4 contains only 2 measurements for each substance,
+                # so we need to skip 3-rd measurement
+                if DATE[d] == DATE[1] and m == 2:
+                    continue
+                st = get_standard_measurement(d, s, m)
+                if is_reformat:
+                    data.append(reformat_measurement(st))
+                else:
+                    data.append(st)
+    return data
+
+
+def get_all_non_standard_data(is_reformat=False):
+    data = []
+    NON_STANDARD_DIR = PATH_TO_DIR + NON_STANDARD_DATA
+    list_of_files = get_list_of_files_in_dir(NON_STANDARD_DIR)
+
+    for f in list_of_files:
+        non_st = get_other_measurement(f)
+        if is_reformat:
+            data.append(reformat_measurement(non_st))
+        else:
+            data.append(non_st)
+
+    return data
+
+
+def create_image_from_array(array, date, substance, measurement):
     path = PATH_TO_DIR + SPLIT_SYMBOL + 'standard/images' + SPLIT_SYMBOL
 
     if not exists(path + date):
