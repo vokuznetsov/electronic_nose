@@ -9,7 +9,7 @@ PATH_TO_DIR = './resource'
 SPLIT_SYMBOL = '/'
 
 # standard resource folder contains only measurement with 6 sensors
-SENSORS_STANDARD = ["Прополис", "МУНТ", "ПЭГ-2000", "ТОФО", "Тритон", "ДЦГ-18К6"]
+SENSORS_STANDARD = ["Прополис", "МУНТ", "ПЭГ-2000", "ТОФО", "Тритон", "ДЦГ-18К6", "ПЭГС", "ПФЭ", "ПЭГСб", "ПЭГФ"]
 
 DATE = ['29.04.16', '03.05.16']
 SUBSTANCE = ['acetaldehyde', 'acetone', 'butanol-1', 'butanol-2', 'ethanol', 'MEK',
