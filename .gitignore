@@ -1,8 +1,7 @@
 *.log
 *.pyc
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+.directory
 
 hs_err_pid*
 

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import visualization as vz
+import data_collection as dc
 
 
 def weight_variable(shape):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     sess.run(init)
 
     for i in range(20000):
-        batch_xs, batch_ys = vz.get_train_data(), vz.get_train_labels()
+        batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
         if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 1.0})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
