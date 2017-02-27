@@ -18,12 +18,12 @@ def conv3d(x, W):
 
 def max_pool_2x2(x):
     return tf.nn.max_pool3d(x, ksize=[1, 1, 2, 2, 1],
-                          strides=[1, 1, 2, 2, 1], padding='SAME')
+                            strides=[1, 1, 2, 2, 1], padding='SAME')
 
 
 def max_pool_2x1(x):
     return tf.nn.max_pool3d(x, ksize=[1, 1, 2, 1, 1],
-                          strides=[1, 1, 2, 1, 1], padding='SAME')
+                            strides=[1, 1, 2, 1, 1], padding='SAME')
 
 
 if __name__ == '__main__':
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
-    correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+    correct_prediction = tf.equal(y_conv, y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     init = tf.initialize_all_variables()
@@ -70,14 +70,23 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(20000):
-        batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
+    for i in range(50):
+        batch_xs, batch_ys = dc.get_test_data(), dc.get_test_labels()
         if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 1.0})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
 
-    print("test accuracy %g" % accuracy.eval(session=sess,
-                                             feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+    correct_prediction = tf.equal(y_conv, y_)
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+    print("Test: train data!")
+    print(sess.run(accuracy, feed_dict={x: dc.get_train_data(),
+                                        y_: dc.get_train_labels(), keep_prob: 1.0}))
 
+    print("Test: test data!")
+    print(sess.run(accuracy, feed_dict={x: dc.get_test_data(),
+                                        y_: dc.get_test_labels(), keep_prob: 1.0}))
+
+    # print("test accuracy %g" % accuracy.eval(session=sess,
+    #                                          feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels(), keep_prob: 1.0}))
