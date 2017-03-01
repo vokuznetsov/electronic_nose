@@ -9,6 +9,7 @@ MAX_VALUE = -32000
 PATH_TO_DIR = './resource'
 STANDARD_DATA = '/standard/'
 NON_STANDARD_DATA = '/non_standard/'
+ALCOHOL_DATA = "/alcohol/"
 SPLIT_SYMBOL = '/'
 
 # standard resource folder contains only measurement with 6 sensors
@@ -17,7 +18,10 @@ SENSORS_STANDARD = ["Прополис", "МУНТ", "ПЭГ-2000", "ТОФО", "
 DATE = ['29.04.16', '03.05.16-4', '03.05.16-6', '04.05.16']
 SUBSTANCE = ['acetaldehyde', 'acetone', 'butanol-1', 'butanol-2', 'ethanol', 'MEK',
              'propanol-1', 'propanol-2', 'toluene']
-MEASUREMENT = ['measurement-1.xlsx', 'measurement-2.xlsx', 'measurement-3.xlsx']
+MEASUREMENT = ['measurement-1.xlsx', 'measurement-2.xlsx', 'measurement-3.xlsx', 'measurement-4.xlsx']
+
+ALCOHOL_DATE = ['13.05.16', '14.05.16', '16.05.16']
+ALCOHOL_SUBSTANCE = 10
 
 
 def is_max(elem):
@@ -31,8 +35,11 @@ def parser(path_to_file, is_standard):
     START_COLUMN_STANDARD = 6
     START_COLUMN_OTHER = 1
     START_ROW_OTHER = 10
-    workbook = xlrd.open_workbook(path_to_file)
-    sensors = get_list_of_sensors(path_to_file, is_standard)
+    try:
+        workbook = xlrd.open_workbook(path_to_file)
+        sensors = get_list_of_sensors(path_to_file, is_standard)
+    except IOError:
+        return
     values = []
     arr = []
     count = 0
@@ -89,6 +96,16 @@ def get_other_measurement(file_name):
     # print('\n' + str(other))
     print '\nFILE NAME: ' + path_to_file
     return other
+
+
+def get_alcohol_measurement(date, substance, measurement):
+    START_NAME = 0
+    file_name = PATH_TO_DIR + ALCOHOL_DATA + ALCOHOL_DATE[date] + SPLIT_SYMBOL + str(substance) \
+                + SPLIT_SYMBOL + MEASUREMENT[measurement]
+
+    alcohol = parser(file_name, is_standard=True)
+    print '\nFILE NAME: ' + file_name[START_NAME:]
+    return alcohol
 
 
 def get_list_of_sensors(path_to_file, is_standard):
@@ -149,10 +166,12 @@ def get_all_standard_data(is_reformat=False):
             for m in range(0, len(MEASUREMENT)):
                 # 03.05.16-4 contains only 2 measurements for each substance,
                 # so we need to skip 3-rd measurement
-                if DATE[d] == DATE[1] and m == 2:
-                    continue
+                # if DATE[d] == DATE[1] and m == 2:
+                #     continue
                 st = get_standard_measurement(d, s, m)
-                if is_reformat:
+                if st is None:
+                    continue
+                elif is_reformat:
                     data.append(reformat_measurement(st))
                 else:
                     data.append(st)
@@ -166,11 +185,31 @@ def get_all_non_standard_data(is_reformat=False):
 
     for f in list_of_files:
         non_st = get_other_measurement(f)
-        if is_reformat:
+        if non_st is None:
+            continue
+        elif is_reformat:
             data.append(reformat_measurement(non_st))
         else:
             data.append(non_st)
 
+    return data
+
+
+def get_all_alcohol(is_reformat=False):
+    data = []
+
+    for d in range(0, len(ALCOHOL_DATE)):
+        print ALCOHOL_DATE[d]
+        for s in range(1, ALCOHOL_SUBSTANCE + 1):
+            for m in range(0, len(MEASUREMENT)):
+                alc = get_alcohol_measurement(d, s, m)
+
+                if alc is None:
+                    continue
+                elif is_reformat:
+                    data.append(reformat_measurement(alc))
+                else:
+                    data.append(alc)
     return data
 
 
