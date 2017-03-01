@@ -32,7 +32,7 @@ def is_max(elem):
 
 # parse standard measurement
 def parser(path_to_file, is_standard):
-    START_COLUMN_STANDARD = 6
+    START_COLUMN_STANDARD = 5
     START_COLUMN_OTHER = 1
     START_ROW_OTHER = 10
     try:
