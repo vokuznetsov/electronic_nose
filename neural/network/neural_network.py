@@ -65,12 +65,13 @@ if __name__ == '__main__':
     correct_prediction = tf.equal(y_conv, y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    init = tf.initialize_all_variables()
+    # init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(50):
+    for i in range(10):
         batch_xs, batch_ys = dc.get_test_data(), dc.get_test_labels()
         if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 1.0})
