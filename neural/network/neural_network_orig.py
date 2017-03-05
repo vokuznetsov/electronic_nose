@@ -96,7 +96,7 @@ if __name__ == '__main__':
             print
 
             test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels()})
-            print("step %d, training accuracy %.3f" % (i, test_accuracy))
+            print("step %d, test accuracy %.3f" % (i, test_accuracy))
             print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
                                                                                                y_: dc.get_test_labels()})))
             print

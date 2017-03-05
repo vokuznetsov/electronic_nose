@@ -1,6 +1,19 @@
 import tensorflow as tf
 import data_collection as dc
 
+INPUT_HEIGHT = 120
+INPUT_WIDTH = 10
+INPUT_DEPTH = 3
+
+KERNEL_HEIGHT = 5
+KERNEL_WIDTH = 5
+KERNEL_1_IN_CHANNEL = 3
+KERNEL_1_OUT_CHANNEL = 32
+KERNEL_2_OUT_CHANNEL = 64
+
+FULLY_CONNECTED_1_OUTPUTS = 1024
+FULLY_CONNECTED_2_OUTPUTS = 1
+
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -18,94 +31,83 @@ def conv2d(x, W):
 
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1], padding='SAME')
+                          strides=[1, 2, 2, 1], padding='SAME')
 
 
 def max_pool_2x1(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 1, 1],
-                            strides=[1, 2, 1, 1], padding='SAME')
+                          strides=[1, 2, 1, 1], padding='SAME')
 
 
 if __name__ == '__main__':
 
-    x = tf.placeholder(tf.float32, [None, 120, 10, 3])
+    # Placeholder
+    x = tf.placeholder(tf.float32, [None, INPUT_HEIGHT, INPUT_WIDTH, INPUT_DEPTH])
+    y_ = tf.placeholder(tf.float32, [None, 1])
 
-    W_conv1 = weight_variable([5, 5, 3, 32])
-    b_conv1 = bias_variable([32])
+    # First layer - convolution
+    W_conv1 = weight_variable([KERNEL_HEIGHT, KERNEL_WIDTH, KERNEL_1_IN_CHANNEL, KERNEL_1_OUT_CHANNEL])
+    b_conv1 = bias_variable([KERNEL_1_OUT_CHANNEL])
+    h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
 
-    x_image = tf.reshape(x, [-1, 120, 10, 3])
-
-    h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+    # Second layer - 2x2 pooling
     h_pool1 = max_pool_2x2(h_conv1)
 
-    W_conv2 = weight_variable([5, 5, 32, 64])
-    b_conv2 = bias_variable([64])
-
+    # Third layer - convolution
+    W_conv2 = weight_variable([KERNEL_HEIGHT, KERNEL_WIDTH, KERNEL_1_OUT_CHANNEL, KERNEL_2_OUT_CHANNEL])
+    b_conv2 = bias_variable([KERNEL_2_OUT_CHANNEL])
     h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
+    # Fourth layer - 2x1 pooling
     h_pool2 = max_pool_2x1(h_conv2)
 
-    W_fc1 = weight_variable([30 * 5 * 64, 1024])
-    b_fc1 = bias_variable([1024])
-
+    # Fifth layer - fully connected layer (30*5*64) -> (1024)
+    W_fc1 = weight_variable([30 * 5 * KERNEL_2_OUT_CHANNEL, FULLY_CONNECTED_1_OUTPUTS])
+    b_fc1 = bias_variable([FULLY_CONNECTED_1_OUTPUTS])
     h_pool2_flat = tf.reshape(h_pool2, [-1, 30 * 5 * 64])
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
-    # keep_prob = tf.placeholder(tf.float32)
-    # h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+    # Sixth layer - fully connected layer (1024) -> (1)
+    W_fc2 = weight_variable([FULLY_CONNECTED_1_OUTPUTS, FULLY_CONNECTED_2_OUTPUTS])
+    b_fc2 = bias_variable([FULLY_CONNECTED_2_OUTPUTS])
 
-    W_fc2 = weight_variable([1024, 1])
-    b_fc2 = bias_variable([1])
 
-    y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
-    # y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
+    # Training
+    y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
+    squared_deltas = tf.square(y_conv - y_)
+    loss = tf.reduce_sum(squared_deltas)
+    optimizer = tf.train.AdamOptimizer(1e-2)
+    gvs = optimizer.compute_gradients(loss)
+    train_step = optimizer.apply_gradients(gvs)
 
-    y_ = tf.placeholder(tf.float32, [None, 1])
-
-    # squared_deltas = tf.square(y_conv - y_)
-    # loss = tf.reduce_sum(squared_deltas)
-    # optimizer = tf.train.GradientDescentOptimizer(0.0000001)
-    # gvs = optimizer.compute_gradients(loss)
+    # --------------------------------------------
+    # y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
+    # cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
+    # optimizer = tf.train.AdamOptimizer(1e-2)
+    # gvs = optimizer.compute_gradients(cross_entropy)
     # train_step = optimizer.apply_gradients(gvs)
 
-    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
-    optimizer = tf.train.GradientDescentOptimizer(1e-8)
-    gvs = optimizer.compute_gradients(cross_entropy)
-    train_step = optimizer.apply_gradients(gvs)
-    # train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-
-    correct_prediction = tf.equal(tf.round(y_conv), y_)
+    correct_prediction = tf.equal(tf.round(tf.nn.sigmoid(y_conv)), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     init = tf.initialize_all_variables()
-    # init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
     for i in range(200):
         batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
-        if i % 5 == 0:
+        if i % 50 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
-            print("Y_conv_train is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
+            print("Y_conv_train is " + str(
+                sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
+            print
 
             test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels()})
-            print("step %d, training accuracy %.3f" % (i, test_accuracy))
+            print("step %d, test accuracy %.3f" % (i, test_accuracy))
             print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
                                                                                                y_: dc.get_test_labels()})))
+            print
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-
-    correct_prediction = tf.equal(y_conv, y_)
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-    print("Test: train data!")
-    print(sess.run(accuracy, feed_dict={x: dc.get_train_data(),
-                                        y_: dc.get_train_labels()}))
-
-    print("Test: test data!")
-    print(sess.run(accuracy, feed_dict={x: dc.get_test_data(),
-                                        y_: dc.get_test_labels()}))
-
-    # print("test accuracy %g" % accuracy.eval(session=sess,
-    #                                          feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels(), keep_prob: 1.0}))

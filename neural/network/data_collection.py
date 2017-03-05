@@ -17,13 +17,13 @@ alcohol_data = standard_data = np.load('resource/data.archive/' + ALCOHOL_PATH +
 
 def get_train_data():
     data1 = np.dstack((standard_data[1], non_standard_data[1], alcohol_data[1])).reshape(1, 120, 10, 3)
-    data2 = np.dstack((non_standard_data[7], standard_data[1], alcohol_data[14])).reshape(1, 120, 10, 3)
+    # data2 = np.dstack((non_standard_data[7], standard_data[1], alcohol_data[14])).reshape(1, 120, 10, 3)
     # data3 = np.dstack((non_standard_data[6], standard_data[12], alcohol_data[6])).reshape(1, 120, 10, 3)
     # data4 = np.dstack((non_standard_data[3], standard_data[8], alcohol_data[19])).reshape(1, 120, 10, 3)
     # data5 = np.dstack((standard_data[20], non_standard_data[1], alcohol_data[15])).reshape(1, 120, 10, 3)
 
     d = np.array(data1).reshape(1, 120, 10, 3)
-    d = np.append(d, data2, axis=0)
+    # d = np.append(d, data2, axis=0)
     # d = np.append(d, data3, axis=0)
     # d = np.append(d, data4, axis=0)
     # d = np.append(d, data5, axis=0)
@@ -32,12 +32,12 @@ def get_train_data():
 
 def get_train_labels():
     # labels = np.array((0, 0, 0, 0, 1)).reshape(5, 1)
-    labels = np.array((1, 0)).reshape(2, 1)
+    labels = np.array(1).reshape(1, 1)
     return labels
 
 
 def get_test_data():
-    data1 = np.dstack((non_standard_data[1], standard_data[0], alcohol_data[1]))
+    data1 = np.dstack((non_standard_data[1], standard_data[1], alcohol_data[1]))
     d = np.array(data1).reshape(1, 120, 10, 3)
 
     # data2 = np.dstack((standard_data[1], non_standard_data[1], alcohol_data[1])).reshape(1, 120, 10, 3)
