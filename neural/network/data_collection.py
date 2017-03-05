@@ -5,47 +5,54 @@ FILE_SIZE = 5000
 DATA_NAME = 'data'
 LABELS_NAME = 'label'
 
-standard_data = parser.get_all_standard_data()
-non_standard_data = parser.get_all_non_standard_data()
-alcohol_data = parser.get_all_alcohol()
+STANDARD_PATH = "original/standard"
+NON_STANDARD_PATH = "original/non_standard"
+ALCOHOL_PATH = "original/alcohol"
+
+
+standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
+non_standard_data = standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
+alcohol_data = standard_data = np.load('resource/data.archive/' + ALCOHOL_PATH + '.npz')["data"]
 
 
 def get_train_data():
-    data1 = np.dstack((standard_data[0], non_standard_data[0], alcohol_data[1]))
+    data1 = np.dstack((standard_data[1], non_standard_data[1], alcohol_data[1])).reshape(1, 120, 10, 3)
+    data2 = np.dstack((non_standard_data[7], standard_data[1], alcohol_data[14])).reshape(1, 120, 10, 3)
+    # data3 = np.dstack((non_standard_data[6], standard_data[12], alcohol_data[6])).reshape(1, 120, 10, 3)
+    # data4 = np.dstack((non_standard_data[3], standard_data[8], alcohol_data[19])).reshape(1, 120, 10, 3)
+    # data5 = np.dstack((standard_data[20], non_standard_data[1], alcohol_data[15])).reshape(1, 120, 10, 3)
+
     d = np.array(data1).reshape(1, 120, 10, 3)
-
-    data2 = np.dstack((standard_data[1], non_standard_data[0], alcohol_data[1])).reshape(1, 120, 10, 3)
-    data3 = np.dstack((standard_data[9], non_standard_data[3], alcohol_data[18])).reshape(1, 120, 10, 3)
-    data4 = np.dstack((non_standard_data[3], standard_data[11], alcohol_data[6])).reshape(1, 120, 10, 3)
-
     d = np.append(d, data2, axis=0)
-    d = np.append(d, data3, axis=0)
-    d = np.append(d, data4, axis=0)
+    # d = np.append(d, data3, axis=0)
+    # d = np.append(d, data4, axis=0)
+    # d = np.append(d, data5, axis=0)
     return d
 
 
 def get_train_labels():
-    labels = np.array((1, 1, 1, 0)).reshape(4, 1)
+    # labels = np.array((0, 0, 0, 0, 1)).reshape(5, 1)
+    labels = np.array((1, 0)).reshape(2, 1)
     return labels
 
 
 def get_test_data():
-    data1 = np.dstack((non_standard_data[10], standard_data[10], alcohol_data[3])).reshape(1, 120, 10, 3)
-    data2 = np.dstack((non_standard_data[7], standard_data[1], alcohol_data[14])).reshape(1, 120, 10, 3)
-    data3 = np.dstack((non_standard_data[6], standard_data[12], alcohol_data[6])).reshape(1, 120, 10, 3)
-    data4 = np.dstack((non_standard_data[3], standard_data[8], alcohol_data[19])).reshape(1, 120, 10, 3)
-    data5 = np.dstack((standard_data[20], non_standard_data[1], alcohol_data[15])).reshape(1, 120, 10, 3)
-
+    data1 = np.dstack((non_standard_data[1], standard_data[0], alcohol_data[1]))
     d = np.array(data1).reshape(1, 120, 10, 3)
-    d = np.append(d, data2, axis=0)
-    d = np.append(d, data3, axis=0)
-    d = np.append(d, data4, axis=0)
-    d = np.append(d, data5, axis=0)
+
+    # data2 = np.dstack((standard_data[1], non_standard_data[1], alcohol_data[1])).reshape(1, 120, 10, 3)
+    # data3 = np.dstack((standard_data[9], non_standard_data[3], alcohol_data[18])).reshape(1, 120, 10, 3)
+    # data4 = np.dstack((non_standard_data[3], standard_data[11], alcohol_data[6])).reshape(1, 120, 10, 3)
+
+    # d = np.append(d, data2, axis=0)
+    # d = np.append(d, data3, axis=0)
+    # d = np.append(d, data4, axis=0)
     return d
 
 
 def get_test_labels():
-    labels = np.array((0, 0, 0, 0, 1)).reshape(5, 1)
+    # labels = np.array((1, 1, 1, 0)).reshape(4, 1)
+    labels = np.array(0).reshape(1, 1)
     return labels
 
 
@@ -57,7 +64,7 @@ def read_data(filename):
     return np.load('resource/data.archive/' + filename + '.npz')
 
 
-def archive_data():
+def archive_collect_data():
     standard_data = parser.get_all_standard_data()
     non_stadard_data = parser.get_all_non_standard_data()
     alcohol_data = parser.get_all_alcohol()
@@ -101,12 +108,29 @@ def collect_data(value, standard_data, non_standard_data, alcohol_data):
                 labels = np.append(labels, 0)
     return data, labels, np.array((len(standard_data), count), dtype=np.int16)
 
-# archive_data()
+
+def archive_parser_data():
+    standard_data = parser.get_all_standard_data()
+    non_stadard_data = parser.get_all_non_standard_data()
+    alcohol_data = parser.get_all_alcohol()
+
+    np.savez_compressed('resource/data.archive/' + STANDARD_PATH, data=standard_data)
+    np.savez_compressed('resource/data.archive/' + NON_STANDARD_PATH, data=non_stadard_data)
+    np.savez_compressed('resource/data.archive/' + ALCOHOL_PATH, data=alcohol_data)
+
+
+
+
+# archive_parser_data()
+# archive_collect_data()
 #
 # arr = read_data("data_22500")
 # print arr[DATA_NAME].shape
 # print arr[LABELS_NAME].shape
 
+# standard_data = read_data(STANDARD_PATH)["data"]
+# non_standard_data = read_data(NON_STANDARD_PATH)["data"]
+# alcohol_data = read_data(ALCOHOL_PATH)["data"]
 
 # array = parser.get_standard_measurement(1, 5, 2)
 
