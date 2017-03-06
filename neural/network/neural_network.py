@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------
     # y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
-    # cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
+    # cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
     # optimizer = tf.train.AdamOptimizer(1e-2)
     # gvs = optimizer.compute_gradients(cross_entropy)
     # train_step = optimizer.apply_gradients(gvs)
@@ -90,24 +90,30 @@ if __name__ == '__main__':
     correct_prediction = tf.equal(tf.round(tf.nn.sigmoid(y_conv)), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    init = tf.initialize_all_variables()
+    # init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(200):
-        batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
+    for i in range(1000):
+        # batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
+        batch_xs, batch_ys = dc.get_data(50)
         if i % 50 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
-            print("Y_conv_train is " + str(
-                sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
-            print
-
-            test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels()})
-            print("step %d, test accuracy %.3f" % (i, test_accuracy))
-            print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
-                                                                                               y_: dc.get_test_labels()})))
-            print
+            # print("Y_conv_train is " + str(
+            #     sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
+            # print
+            #
+            # test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels()})
+            # print("step %d, test accuracy %.3f" % (i, test_accuracy))
+            # print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
+            #                                                                                    y_: dc.get_test_labels()})))
+            # print
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+    batch_xs, batch_ys = dc.get_data(10)
+    print("test accuracy %g" % accuracy.eval(session=sess,
+                                             feed_dict={x: batch_xs, y_: batch_ys}))

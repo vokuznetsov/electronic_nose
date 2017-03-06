@@ -1,5 +1,6 @@
 import numpy as np
 import parser
+import random
 
 FILE_SIZE = 5000
 DATA_NAME = 'data'
@@ -8,7 +9,6 @@ LABELS_NAME = 'label'
 STANDARD_PATH = "original/standard"
 NON_STANDARD_PATH = "original/non_standard"
 ALCOHOL_PATH = "original/alcohol"
-
 
 standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
 non_standard_data = standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
@@ -119,6 +119,31 @@ def archive_parser_data():
     np.savez_compressed('resource/data.archive/' + ALCOHOL_PATH, data=alcohol_data)
 
 
+def get_data(count):
+    data = []
+    labels = []
+    for i in range(0, count):
+        st_index = random.randint(0, len(standard_data) - 1)
+        non_st_index = random.randint(0, len(non_standard_data) - 1)
+        alc_index = random.randint(0, len(alcohol_data) - 1)
+        label = np.array(random.randint(0, 1)).reshape(1, 1)
+
+        d = []
+        if label == 0:
+            d = np.dstack((non_standard_data[non_st_index], standard_data[st_index], alcohol_data[alc_index])).reshape(
+                1, 120, 10, 3)
+        else:
+            d = np.dstack((standard_data[st_index], non_standard_data[non_st_index], alcohol_data[alc_index])).reshape(
+                1, 120, 10, 3)
+
+        if len(data) == 0:
+            data = np.array(d).reshape(1, 120, 10, 3)
+            labels = np.array(label).reshape(1, 1)
+        else:
+            data = np.append(data, d, axis=0)
+            labels = np.append(labels, label, axis=0)
+
+    return data, labels
 
 
 # archive_parser_data()
