@@ -90,13 +90,13 @@ if __name__ == '__main__':
     sess.run(init)
 
     for i in range(1000):
-        batch_xs, batch_ys = dc.get_data(50)
+        batch_xs, batch_ys = dc.get_train_data(50)
         if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_data(500)
+    batch_xs, batch_ys = dc.get_test_data(500)
     print("test accuracy %.3f" % accuracy.eval(session=sess,
                                                feed_dict={x: batch_xs, y_: batch_ys}))
     print("Working time")
