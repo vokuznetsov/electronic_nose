@@ -1,5 +1,6 @@
 import tensorflow as tf
 import data_collection as dc
+import time
 
 INPUT_HEIGHT = 120
 INPUT_WIDTH = 10
@@ -41,6 +42,9 @@ def max_pool_2x1(x):
 
 if __name__ == '__main__':
 
+    # Timer
+    start_time = time.time()
+
     # Placeholder
     x = tf.placeholder(tf.float32, [None, INPUT_HEIGHT, INPUT_WIDTH, INPUT_DEPTH])
     y_ = tf.placeholder(tf.float32, [None, 1])
@@ -71,7 +75,6 @@ if __name__ == '__main__':
     W_fc2 = weight_variable([FULLY_CONNECTED_1_OUTPUTS, FULLY_CONNECTED_2_OUTPUTS])
     b_fc2 = bias_variable([FULLY_CONNECTED_2_OUTPUTS])
 
-
     # Training
     y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
     squared_deltas = tf.square(y_conv - y_)
@@ -96,10 +99,10 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(1000):
+    for i in range(2000):
         # batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
         batch_xs, batch_ys = dc.get_data(50)
-        if i % 50 == 0:
+        if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
             # print("Y_conv_train is " + str(
@@ -114,6 +117,9 @@ if __name__ == '__main__':
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_data(10)
+    batch_xs, batch_ys = dc.get_data(100)
     print("test accuracy %g" % accuracy.eval(session=sess,
                                              feed_dict={x: batch_xs, y_: batch_ys}))
+
+    print("Working time")
+    print("--- %s seconds ---" % (time.time() - start_time))
