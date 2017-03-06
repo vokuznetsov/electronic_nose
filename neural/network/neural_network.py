@@ -85,26 +85,25 @@ if __name__ == '__main__':
 
     # --------------------------------------------
     y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
-    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
-    optimizer = tf.train.AdamOptimizer(0.00001)
-    gvs = optimizer.compute_gradients(cross_entropy)
-    train_step = optimizer.apply_gradients(gvs)
+    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
+    train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
+    # optimizer = tf.train.AdamOptimizer(1e-5)
+    # gvs = optimizer.compute_gradients(cross_entropy)
+    # train_step = optimizer.apply_gradients(gvs)
 
     correct_prediction = tf.equal(tf.round(y_conv), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    # init = tf.initialize_all_variables()
-    init = tf.global_variables_initializer()
+    init = tf.initialize_all_variables()
+    # init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(2000):
+    for i in range(200):
         # batch_xs, batch_ys = dc.normilize_train(), dc.get_train_labels()
-        start_time_1 = time.time()
-        batch_xs, batch_ys = dc.get_data(50)
-        print("--- %s seconds ---" % (time.time() - start_time_1))
-        if i % 100 == 0:
+        batch_xs, batch_ys = dc.get_data(5)
+        if i % 10 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
             # print("Y_conv_train is " + str(
@@ -119,7 +118,7 @@ if __name__ == '__main__':
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_data(500)
+    batch_xs, batch_ys = dc.get_data(50)
     print("test accuracy %g" % accuracy.eval(session=sess,
                                              feed_dict={x: batch_xs, y_: batch_ys}))
 

@@ -12,8 +12,16 @@ NON_STANDARD_PATH = "original/non_standard"
 ALCOHOL_PATH = "original/alcohol"
 
 standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
-non_standard_data = standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
-alcohol_data = standard_data = np.load('resource/data.archive/' + ALCOHOL_PATH + '.npz')["data"]
+non_standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
+alcohol_data = np.load('resource/data.archive/' + ALCOHOL_PATH + '.npz')["data"]
+
+# print "Shape st: " + str(standard_data.shape)
+# print "Shape non_st: " + str(non_standard_data.shape)
+# print "Shape alc: " + str(alcohol_data.shape)
+#
+# print "max: " + str(standard_data.max()) + " min: " + str(standard_data.min())
+# print "max: " + str(non_standard_data.max()) + " min: " + str(non_standard_data.min())
+# print "max: " + str(alcohol_data.max()) + " min: " + str(alcohol_data.min())
 
 
 def get_train_data():
@@ -115,6 +123,10 @@ def archive_parser_data():
     non_stadard_data = parser.get_all_non_standard_data()
     alcohol_data = parser.get_all_alcohol()
 
+    standard_data = normilize(standard_data)
+    non_stadard_data = normilize(non_stadard_data)
+    alcohol_data = normilize(alcohol_data)
+
     np.savez_compressed('resource/data.archive/' + STANDARD_PATH, data=standard_data)
     np.savez_compressed('resource/data.archive/' + NON_STANDARD_PATH, data=non_stadard_data)
     np.savez_compressed('resource/data.archive/' + ALCOHOL_PATH, data=alcohol_data)
@@ -144,7 +156,7 @@ def get_data(count):
             data = np.append(data, d, axis=0)
             labels = np.append(labels, label, axis=0)
 
-    return normilize(data), labels
+    return data, labels
 
 
 def normilize_train():
@@ -175,17 +187,15 @@ def normilize_test():
 
 
 def normilize(data):
-    normed = []
-    init = tf.global_variables_initializer()
-    normed = tf.nn.l2_normalize(data, dim=1)
+    init = tf.initialize_all_variables()
+    x = np.array(data).reshape(-1, 120, 10)
+    x = tf.reshape(x, [-1, 120, 10])
+    normed = tf.nn.l2_normalize(x, dim=1)
     sess = tf.Session()
     sess.run(init)
-    normed = sess.run(normed)
-    return normed
+    return sess.run(normed)
 
-
-# n_t = normilize_train()
-# print "a"
+# print "test"
 
 # archive_parser_data()
 # archive_collect_data()
