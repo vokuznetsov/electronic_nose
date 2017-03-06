@@ -76,20 +76,9 @@ if __name__ == '__main__':
     b_fc2 = bias_variable([FULLY_CONNECTED_2_OUTPUTS])
 
     # Training
-    # y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
-    # squared_deltas = tf.square(y_conv - y_)
-    # loss = tf.reduce_sum(squared_deltas)
-    # optimizer = tf.train.AdamOptimizer(1e-2)
-    # gvs = optimizer.compute_gradients(loss)
-    # train_step = optimizer.apply_gradients(gvs)
-
-    # --------------------------------------------
     y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
     cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
     train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
-    # optimizer = tf.train.AdamOptimizer(1e-5)
-    # gvs = optimizer.compute_gradients(cross_entropy)
-    # train_step = optimizer.apply_gradients(gvs)
 
     correct_prediction = tf.equal(tf.round(y_conv), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -100,27 +89,15 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(200):
-        # batch_xs, batch_ys = dc.normilize_train(), dc.get_train_labels()
-        batch_xs, batch_ys = dc.get_data(5)
-        if i % 10 == 0:
+    for i in range(1000):
+        batch_xs, batch_ys = dc.get_data(50)
+        if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
-            # print("Y_conv_train is " + str(
-            #     sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
-            # print
-            #
-            # test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.normilize_test(), y_: dc.get_test_labels()})
-            # print("step %d, test accuracy %.3f" % (i, test_accuracy))
-            # print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
-            #                                                                                    y_: dc.get_test_labels()})))
-            # print
-
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_data(50)
-    print("test accuracy %g" % accuracy.eval(session=sess,
-                                             feed_dict={x: batch_xs, y_: batch_ys}))
-
+    batch_xs, batch_ys = dc.get_data(500)
+    print("test accuracy %.3f" % accuracy.eval(session=sess,
+                                               feed_dict={x: batch_xs, y_: batch_ys}))
     print("Working time")
     print("--- %s seconds ---" % (time.time() - start_time))
