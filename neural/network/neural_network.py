@@ -76,21 +76,21 @@ if __name__ == '__main__':
     b_fc2 = bias_variable([FULLY_CONNECTED_2_OUTPUTS])
 
     # Training
-    y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
-    squared_deltas = tf.square(y_conv - y_)
-    loss = tf.reduce_sum(squared_deltas)
-    optimizer = tf.train.AdamOptimizer(1e-2)
-    gvs = optimizer.compute_gradients(loss)
-    train_step = optimizer.apply_gradients(gvs)
-
-    # --------------------------------------------
-    # y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
-    # cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
+    # y_conv = tf.matmul(h_fc1, W_fc2) + b_fc2
+    # squared_deltas = tf.square(y_conv - y_)
+    # loss = tf.reduce_sum(squared_deltas)
     # optimizer = tf.train.AdamOptimizer(1e-2)
-    # gvs = optimizer.compute_gradients(cross_entropy)
+    # gvs = optimizer.compute_gradients(loss)
     # train_step = optimizer.apply_gradients(gvs)
 
-    correct_prediction = tf.equal(tf.round(tf.nn.sigmoid(y_conv)), y_)
+    # --------------------------------------------
+    y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
+    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
+    optimizer = tf.train.AdamOptimizer(0.00001)
+    gvs = optimizer.compute_gradients(cross_entropy)
+    train_step = optimizer.apply_gradients(gvs)
+
+    correct_prediction = tf.equal(tf.round(y_conv), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # init = tf.initialize_all_variables()
@@ -100,8 +100,10 @@ if __name__ == '__main__':
     sess.run(init)
 
     for i in range(2000):
-        # batch_xs, batch_ys = dc.get_train_data(), dc.get_train_labels()
+        # batch_xs, batch_ys = dc.normilize_train(), dc.get_train_labels()
+        start_time_1 = time.time()
         batch_xs, batch_ys = dc.get_data(50)
+        print("--- %s seconds ---" % (time.time() - start_time_1))
         if i % 100 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
@@ -109,7 +111,7 @@ if __name__ == '__main__':
             #     sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: batch_xs, y_: batch_ys})))
             # print
             #
-            # test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.get_test_data(), y_: dc.get_test_labels()})
+            # test_accuracy = accuracy.eval(session=sess, feed_dict={x: dc.normilize_test(), y_: dc.get_test_labels()})
             # print("step %d, test accuracy %.3f" % (i, test_accuracy))
             # print("Y_conv_test is " + str(sess.run(tf.matmul(h_fc1, W_fc2) + b_fc2, feed_dict={x: dc.get_test_data(),
             #                                                                                    y_: dc.get_test_labels()})))
@@ -117,7 +119,7 @@ if __name__ == '__main__':
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_data(100)
+    batch_xs, batch_ys = dc.get_data(500)
     print("test accuracy %g" % accuracy.eval(session=sess,
                                              feed_dict={x: batch_xs, y_: batch_ys}))
 

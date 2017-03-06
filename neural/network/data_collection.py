@@ -1,6 +1,7 @@
 import numpy as np
 import parser
 import random
+import tensorflow as tf
 
 FILE_SIZE = 5000
 DATA_NAME = 'data'
@@ -40,19 +41,19 @@ def get_test_data():
     data1 = np.dstack((non_standard_data[1], standard_data[1], alcohol_data[1]))
     d = np.array(data1).reshape(1, 120, 10, 3)
 
-    # data2 = np.dstack((standard_data[1], non_standard_data[1], alcohol_data[1])).reshape(1, 120, 10, 3)
-    # data3 = np.dstack((standard_data[9], non_standard_data[3], alcohol_data[18])).reshape(1, 120, 10, 3)
-    # data4 = np.dstack((non_standard_data[3], standard_data[11], alcohol_data[6])).reshape(1, 120, 10, 3)
+    data2 = np.dstack((non_standard_data[8], standard_data[12], alcohol_data[7])).reshape(1, 120, 10, 3)
+    data3 = np.dstack((non_standard_data[3], standard_data[9], alcohol_data[18])).reshape(1, 120, 10, 3)
+    data4 = np.dstack((non_standard_data[3], standard_data[11], alcohol_data[6])).reshape(1, 120, 10, 3)
 
-    # d = np.append(d, data2, axis=0)
-    # d = np.append(d, data3, axis=0)
-    # d = np.append(d, data4, axis=0)
+    d = np.append(d, data2, axis=0)
+    d = np.append(d, data3, axis=0)
+    d = np.append(d, data4, axis=0)
     return d
 
 
 def get_test_labels():
     # labels = np.array((1, 1, 1, 0)).reshape(4, 1)
-    labels = np.array(0).reshape(1, 1)
+    labels = np.array((0, 0, 0, 0)).reshape(4, 1)
     return labels
 
 
@@ -143,8 +144,48 @@ def get_data(count):
             data = np.append(data, d, axis=0)
             labels = np.append(labels, label, axis=0)
 
-    return data, labels
+    return normilize(data), labels
 
+
+def normilize_train():
+    td = get_train_data()
+    # x = tf.reshape(td, [-1, 120, 10, 3])
+    # batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2, 3], name='moments')
+    init = tf.global_variables_initializer()
+    # normed = tf.nn.batch_normalization(x, batch_mean, batch_var, 0.0, 1.0, 1e-3)
+    normed = tf.nn.l2_normalize(td, dim=0)
+    # batch_mean, batch_var = tf.nn.moments(normed, [0, 1, 2, 3], name='moments')
+    sess = tf.Session()
+    sess.run(init)
+
+    return sess.run(normed)
+
+
+def normilize_test():
+    td = get_test_data()
+    x = tf.reshape(td, [-1, 120, 10, 3])
+    # batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2, 3], name='moments')
+    init = tf.global_variables_initializer()
+    # normed = tf.nn.batch_normalization(x, batch_mean, batch_var, 0.0, 1.0, 1e-3)
+    normed = tf.nn.l2_normalize(x, dim=1)
+    sess = tf.Session()
+    sess.run(init)
+
+    return sess.run(normed)
+
+
+def normilize(data):
+    normed = []
+    init = tf.global_variables_initializer()
+    normed = tf.nn.l2_normalize(data, dim=1)
+    sess = tf.Session()
+    sess.run(init)
+    normed = sess.run(normed)
+    return normed
+
+
+# n_t = normilize_train()
+# print "a"
 
 # archive_parser_data()
 # archive_collect_data()
