@@ -40,6 +40,25 @@ def max_pool_2x1(x):
                           strides=[1, 2, 1, 1], padding='SAME')
 
 
+def save_model(sess):
+    # Add ops to save and restore all the variables.
+    saver = tf.train.Saver()
+
+    # Save the variables to disk.
+    save_path = saver.save(sess, "./resource/training_model/model.ckpt")
+    print("Model saved in file: %s" % save_path)
+
+
+def restore_model(sess):
+    # Add ops to save and restore all the variables.
+    saver = tf.train.Saver()
+
+    # Restore variables from disk.
+    saver.restore(sess, "./resource/training_model/model.ckpt")
+    print("Model restored.")
+    return sess
+
+
 if __name__ == '__main__':
 
     # Timer
@@ -77,27 +96,35 @@ if __name__ == '__main__':
 
     # Training
     y_conv = tf.nn.sigmoid(tf.matmul(h_fc1, W_fc2) + b_fc2)
-    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
+    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
     train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 
     correct_prediction = tf.equal(tf.round(y_conv), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    init = tf.initialize_all_variables()
-    # init = tf.global_variables_initializer()
+    # init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
-    for i in range(1000):
-        batch_xs, batch_ys = dc.get_train_data(50)
-        if i % 100 == 0:
-            train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
-            print("step %d, training accuracy %.3f" % (i, train_accuracy))
-        sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+    # for i in range(2000):
+    #     batch_xs, batch_ys = dc.get_train_data(50)
+    #     if i % 100 == 0:
+    #         train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
+    #         print("step %d, training accuracy %.3f" % (i, train_accuracy))
+    #     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    batch_xs, batch_ys = dc.get_test_data(500)
-    print("test accuracy %.3f" % accuracy.eval(session=sess,
-                                               feed_dict={x: batch_xs, y_: batch_ys}))
+    # save_model(sess)
+
+    sess = restore_model(sess)
+
+    for i in range(0, 10):
+        batch_xs, batch_ys = dc.get_test_data(500)
+        print("test accuracy %.3f" % accuracy.eval(session=sess,
+                                                   feed_dict={x: batch_xs, y_: batch_ys}))
+
+
+
     print("Working time")
     print("--- %s seconds ---" % (time.time() - start_time))
