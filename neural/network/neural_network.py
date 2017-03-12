@@ -108,23 +108,25 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    # for i in range(1000):
+    # for i in range(2000):
     #     batch_xs, batch_ys = dc.get_train_data(50)
-    #     if i % 10 == 0:
+    #     if i % 100 == 0:
     #         train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
     #         print("step %d, training accuracy %.3f" % (i, train_accuracy))
     #     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-
+    #
     # save_model(sess)
-
     sess = restore_model(sess)
 
+    values = []
     for i in range(0, 10):
         # batch_xs, batch_ys = dc.get_test_data(500)
-        # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(30)
-        batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
+        batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
+        # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
+        values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))
         print("test accuracy %.3f" % accuracy.eval(session=sess,
                                                    feed_dict={x: batch_xs, y_: batch_ys}))
 
+    print("Average accuracy is %.3f" % (sum(values) / len(values)))
     print("Working time")
     print("--- %s seconds ---" % (time.time() - start_time))

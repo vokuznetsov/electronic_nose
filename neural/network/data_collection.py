@@ -7,13 +7,13 @@ STANDARD_PATH = "normalization/standard"
 NON_STANDARD_PATH = "normalization/non_standard"
 ALCOHOL_PATH = "normalization/alcohol"
 
-# non_standard_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
-#                                 '/non_stand_alc' + '.npz')["data"]
-# non_standard_non_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
-#                                     '/non_stand_non_alc' + '.npz')["data"]
+non_standard_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
+                                '/non_stand_alc' + '.npz')["data"]
+non_standard_non_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
+                                    '/non_stand_non_alc' + '.npz')["data"]
 
-standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
-non_standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
+# standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
+# non_standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
 alcohol_data = np.load('resource/data.archive/' + ALCOHOL_PATH + '.npz')["data"]
 
 PERCENT_OF_TRAINING_DATA = 0.7
@@ -86,8 +86,8 @@ def get_train_data(batch_size):
     non_st_end = round(len(non_standard_data) * PERCENT_OF_TRAINING_DATA)
     alc_end = round(len(alcohol_data) * PERCENT_OF_TRAINING_DATA)
 
-    data, labels = get_data(batch_size, standard_data, st_start, st_end, non_standard_data, non_st_start, non_st_end,
-                            alcohol_data, alc_start, alc_end)
+    data, labels = get_data(batch_size, standard_data, 0, st_end, non_standard_data, 0, non_st_end,
+                            alcohol_data, 0, alc_end)
     return data, labels
 
 
@@ -149,14 +149,14 @@ def get_test_data_for_all_alc(batch_size):
     return data, labels
 
 
-    # archive_parser_data()
-    # archive_non_stand_data_splitted_by_alc()
-    #
-    # print len(standard_data)
-    # print len(non_standard_data)
-    # print len(alcohol_data)
-    #
-    #
-    # print round(len(standard_data) * PERCENT_OF_TRAINING_DATA)
-    # print round(len(non_standard_data) * PERCENT_OF_TRAINING_DATA)
-    # print round(len(alcohol_data) * PERCENT_OF_TRAINING_DATA)
+# archive_parser_data()
+# archive_non_stand_data_splitted_by_alc()
+#
+# print len(standard_data)
+# print len(non_standard_data)
+# print len(alcohol_data)
+#
+#
+# print round(len(standard_data) * PERCENT_OF_TRAINING_DATA)
+# print round(len(non_standard_data) * PERCENT_OF_TRAINING_DATA)
+# print round(len(alcohol_data) * PERCENT_OF_TRAINING_DATA)

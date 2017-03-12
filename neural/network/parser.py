@@ -57,12 +57,15 @@ def parser(path_to_file, is_standard):
                     count += 1
                     if count > START_ROW_OTHER:
                         is_max(elem.value)
+                        if len(values) == 120:
+                            break
                         values.append(elem.value)
 
+            last_value = values[-1]
             # Neural network take a matrix with 120 rows so it is necessary to add additional rows with 0 value
             # in order to get a vector with size 120x1.
             for i in range(len(values), 120):
-                values.append(0)
+                values.append(last_value)
         else:
             # so we should have a matrix with size 120x10, we should add a zeros vector with size (120x1)
             # zeros vectors because the sensors is not contained in SENSORS_STANDARD
@@ -252,6 +255,9 @@ def create_image_from_array(array, is_standard=False, date=None, substance=None,
         if not exists(path + 'all'):
             makedirs(path + 'all')
         img.save(str(path + SPLIT_SYMBOL + 'all' + SPLIT_SYMBOL + filename) + '.png')
+
+# get_all_non_standard_data()
+# get_all_non_standard_data_splitted_by_alcohol()
 
 # standard = get_standard_measurement(1, 3, 1)
 # file_list = get_list_of_files_in_dir(PATH_TO_DIR, False)
