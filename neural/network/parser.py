@@ -179,19 +179,10 @@ def get_all_standard_data(is_reformat=False):
 
 
 def get_all_non_standard_data(is_reformat=False):
-    data = []
     NON_STANDARD_DIR = PATH_TO_DIR + NON_STANDARD_DATA + 'data/'
     list_of_files = get_list_of_files_in_dir(NON_STANDARD_DIR)
 
-    for f in list_of_files:
-        non_st = get_other_measurement(f)
-        if non_st is None:
-            continue
-        elif is_reformat:
-            data.append(reformat_measurement(non_st))
-        else:
-            data.append(non_st)
-
+    data = collect_non_standard_data(list_of_files, is_reformat)
     return data
 
 
@@ -210,6 +201,32 @@ def get_all_alcohol(is_reformat=False):
                     data.append(reformat_measurement(alc))
                 else:
                     data.append(alc)
+    return data
+
+
+def get_all_non_standard_data_splitted_by_alcohol():
+    NON_STANDARD_ALC_DIR = PATH_TO_DIR + NON_STANDARD_DATA + 'data_test/non_stand_alc'
+    NON_STANDARD_NON_ALC_DIR = PATH_TO_DIR + NON_STANDARD_DATA + 'data_test/non_stand_non_alc'
+
+    list_of_files_alc = get_list_of_files_in_dir(NON_STANDARD_ALC_DIR)
+    list_of_files_non_alc = get_list_of_files_in_dir(NON_STANDARD_NON_ALC_DIR)
+
+    non_stand_alc = collect_non_standard_data(list_of_files_alc)
+    non_stand_non_alc = collect_non_standard_data(list_of_files_non_alc)
+
+    return non_stand_alc, non_stand_non_alc
+
+
+def collect_non_standard_data(list_of_files, is_reformat=False):
+    data = []
+    for f in list_of_files:
+        non_st = get_other_measurement(f)
+        if non_st is None:
+            continue
+        elif is_reformat:
+            data.append(reformat_measurement(non_st))
+        else:
+            data.append(non_st)
     return data
 
 

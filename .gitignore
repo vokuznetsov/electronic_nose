@@ -13,3 +13,4 @@ hs_err_pid*
 **/logs/*
 **/resource/standard/images/*
 **/resource/non_standard/images/*
+**/training_model/*
