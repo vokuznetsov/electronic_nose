@@ -40,21 +40,33 @@ def max_pool_2x1(x):
                           strides=[1, 2, 1, 1], padding='SAME')
 
 
-def save_model(sess):
+def train_and_save(is_save, place=""):
+    for i in range(1000):
+        batch_xs, batch_ys = dc.get_train_data(50, 0, 120)
+        if i % 100 == 0:
+            train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
+            print("step %d, training accuracy %.3f" % (i, train_accuracy))
+        sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+    if is_save:
+        save_model(sess, place)
+
+
+def save_model(sess, place):
     # Add ops to save and restore all the variables.
     saver = tf.train.Saver()
 
     # Save the variables to disk.
-    save_path = saver.save(sess, "./resource/training_model/model.ckpt")
+    save_path = saver.save(sess, "./resource/training_model/"+ str(place) +"/model.ckpt")
     print("Model saved in file: %s" % save_path)
 
 
-def restore_model(sess):
+def restore_model(sess, place):
     # Add ops to save and restore all the variables.
     saver = tf.train.Saver()
 
     # Restore variables from disk.
-    saver.restore(sess, "./resource/training_model/model.ckpt")
+    saver.restore(sess, "./resource/training_model/" + str(place) +"/model.ckpt")
     print("Model restored.")
     return sess
 
@@ -108,20 +120,13 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    # for i in range(2000):
-    #     batch_xs, batch_ys = dc.get_train_data(50)
-    #     if i % 100 == 0:
-    #         train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
-    #         print("step %d, training accuracy %.3f" % (i, train_accuracy))
-    #     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-    #
-    # save_model(sess)
-    sess = restore_model(sess)
+    train_and_save(True, "120")
+    # sess = restore_model(sess, "120")
 
     values = []
     for i in range(0, 10):
-        # batch_xs, batch_ys = dc.get_test_data(500)
-        batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
+        batch_xs, batch_ys = dc.get_test_data(500, 0, 120)
+        # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))
         print("test accuracy %.3f" % accuracy.eval(session=sess,
