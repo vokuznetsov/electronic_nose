@@ -151,12 +151,3 @@ def get_test_data_for_all_alc(batch_size):
 
 # archive_parser_data()
 # archive_non_stand_data_splitted_by_alc()
-#
-# print len(standard_data)
-# print len(non_standard_data)
-# print len(alcohol_data)
-#
-#
-# print round(len(standard_data) * PERCENT_OF_TRAINING_DATA)
-# print round(len(non_standard_data) * PERCENT_OF_TRAINING_DATA)
-# print round(len(alcohol_data) * PERCENT_OF_TRAINING_DATA)

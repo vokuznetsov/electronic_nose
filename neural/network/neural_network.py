@@ -120,8 +120,8 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    train_and_save(True, "120")
-    # sess = restore_model(sess, "120")
+    # train_and_save(True, "120")
+    sess = restore_model(sess, "120")
 
     values = []
     for i in range(0, 10):

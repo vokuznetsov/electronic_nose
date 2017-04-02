@@ -5,7 +5,6 @@ from os import listdir, makedirs
 from os.path import isfile, join, exists
 from PIL import Image
 
-MAX_VALUE = -32000
 PATH_TO_DIR = './resource'
 STANDARD_DATA = '/data/standard/'
 NON_STANDARD_DATA = '/data/non_standard/'
@@ -22,12 +21,6 @@ MEASUREMENT = ['measurement-1.xlsx', 'measurement-2.xlsx', 'measurement-3.xlsx',
 
 ALCOHOL_DATE = ['13.05.16', '14.05.16', '16.05.16']
 ALCOHOL_SUBSTANCE = 10
-
-
-def is_max(elem):
-    global MAX_VALUE
-    if MAX_VALUE < elem:
-        MAX_VALUE = elem
 
 
 # parse standard measurement
@@ -50,13 +43,11 @@ def parser(path_to_file, is_standard):
 
             if is_standard:
                 for elem in workbook.sheet_by_index(0).col(START_COLUMN_STANDARD + index):
-                    is_max(elem.value)
                     values.append(elem.value)
             else:
                 for elem in workbook.sheet_by_index(0).col(START_COLUMN_OTHER + index):
                     count += 1
                     if count > START_ROW_OTHER:
-                        is_max(elem.value)
                         if len(values) == 120:
                             break
                         values.append(elem.value)
