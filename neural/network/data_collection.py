@@ -3,18 +3,18 @@ import parser
 import random
 import tensorflow as tf
 
-STANDARD_PATH = "normalization/standard"
-NON_STANDARD_PATH = "normalization/non_standard"
-ALCOHOL_PATH = "normalization/alcohol"
+STANDARD_PATH = "/normalize_data/standard"
+NON_STANDARD_PATH = "/normalize_data/non_standard"
+ALCOHOL_PATH = "/normalize_data/alcohol"
 
 # non_standard_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
 #                                 '/non_stand_alc' + '.npz')["data"]
 # non_standard_non_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
 #                                     '/non_stand_non_alc' + '.npz')["data"]
 
-standard_data = np.load('resource/data.archive/' + STANDARD_PATH + '.npz')["data"]
-non_standard_data = np.load('resource/data.archive/' + NON_STANDARD_PATH + '.npz')["data"]
-alcohol_data = np.load('resource/data.archive/' + ALCOHOL_PATH + '.npz')["data"]
+standard_data = np.load('resource/' + STANDARD_PATH + '.npz')["data"]
+non_standard_data = np.load('resource/' + NON_STANDARD_PATH + '.npz')["data"]
+alcohol_data = np.load('resource/' + ALCOHOL_PATH + '.npz')["data"]
 
 PERCENT_OF_TRAINING_DATA = 0.7
 
@@ -38,9 +38,9 @@ def archive_parser_data():
     non_stadard_data = normalization(non_stadard_data)
     alcohol_data = normalization(alcohol_data)
 
-    np.savez_compressed('resource/data.archive/' + STANDARD_PATH, data=standard_data)
-    np.savez_compressed('resource/data.archive/' + NON_STANDARD_PATH, data=non_stadard_data)
-    np.savez_compressed('resource/data.archive/' + ALCOHOL_PATH, data=alcohol_data)
+    np.savez_compressed('resource/' + STANDARD_PATH, data=standard_data)
+    np.savez_compressed('resource/' + NON_STANDARD_PATH, data=non_stadard_data)
+    np.savez_compressed('resource/' + ALCOHOL_PATH, data=alcohol_data)
 
 
 def archive_non_stand_data_splitted_by_alc():

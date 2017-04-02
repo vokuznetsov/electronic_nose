@@ -117,7 +117,7 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    # train_and_save(sess, 110, 120, True, "10_last")
+    # train_and_save(sess, 0, 10, True, "10_first")
     sess = restore_model(sess, "10_first")
 
     values = []

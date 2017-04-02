@@ -7,9 +7,9 @@ from PIL import Image
 
 MAX_VALUE = -32000
 PATH_TO_DIR = './resource'
-STANDARD_DATA = '/standard/'
-NON_STANDARD_DATA = '/non_standard/'
-ALCOHOL_DATA = "/alcohol/"
+STANDARD_DATA = '/data/standard/'
+NON_STANDARD_DATA = '/data/non_standard/'
+ALCOHOL_DATA = "/data/alcohol/"
 SPLIT_SYMBOL = '/'
 
 # standard resource folder contains only measurement with 6 sensors
