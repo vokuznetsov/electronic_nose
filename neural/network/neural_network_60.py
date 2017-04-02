@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
     start_elem = 0
     end_elem = 60
-    # train_and_save(sess, start_elem, end_elem, True, "60_first")
-    sess = restore_model(sess, "60_first")
+    train_and_save(sess, start_elem, end_elem, True, "60_first")
+    # sess = restore_model(sess, "60_first")
 
     values = []
     for i in range(0, 10):
