@@ -7,13 +7,12 @@ from scipy.spatial import distance
 # vim: set fileencoding=utf-8 :
 
 START_COLUMN = 1
-NUMBER_OF_FIRST_MEASUREMENT = 11
-list_of_files = ['belkozin_21_07_14_17_48.xls', 'vodka_proba_1_21_05_14_18_35.XLS', 'voda_proba_1_20_05_14_19_33.XLS',
-                 'beef_50_23_05_14_14_42.xls', 'cheeken_50_23_05_14_14_12.XLS', 'aceton_14_05_14_13_20.XLS',
-                 'izopropanol_14_05_14_16_22.XLS', 'ethylacetate_16_05_14_15_49.XLS', 'uksus_2_09_14_14_13.xls',
-                 'voda_distil_17_09_14_15_20.xls', 'etanol_3_07_14_17_25.xls', 'aceton_1_07_14_15_45.XLS',
-                 'etanol_4_07_14_16_40.XLS', 'suharik_29_06_09_17_33.xls', 'suharik_29_06_09_17_36.XLS',
-                 'aceton_14_05_14_13_51.XLS']
+NUMBER_OF_FIRST_MEASUREMENT = 16
+list_of_files = ['belkozin_21_07_14_17_48.XLS', 'vodka_proba_1_21_05_14_18_35.XLS', 'voda_proba_1_20_05_14_19_33.XLS',
+                 'beef_50_23_05_14_14_42.XLS', 'cheeken_50_23_05_14_14_12.XLS', 'aceton_14_05_14_13_20.XLS',
+                 'izopropanol_14_05_14_16_22.XLS', 'ethylacetate_16_05_14_15_49.XLS', 'uksus_2_09_14_14_13.XLS',
+                 'voda_distil_17_09_14_15_20.XLS', 'etanol_3_07_14_17_25.XLS', 'aceton_1_07_14_15_45.XLS',
+                 'etanol_4_07_14_16_40.XLS', 'suharik_29_06_09_17_33.XLS', 'suharik_29_06_09_17_36.XLS']
 
 
 def parsing(path_to_file):
@@ -87,4 +86,4 @@ print '\n'
 closeness(result[:, 0], result[:, 1], result[:, 12])
 
 print '\n'
-closeness_all(2)
+closeness_all(10)

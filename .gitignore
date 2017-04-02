@@ -1,15 +1,9 @@
 *.log
 *.pyc
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+*.directory*
+**/*lock*/*
 
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
 **/.idea/*
@@ -17,3 +11,6 @@ hs_err_pid*
 **/extraction/*
 **/*.iml
 **/logs/*
+**/resource/standard/images/*
+**/resource/non_standard/images/*
+**/training_model/*
