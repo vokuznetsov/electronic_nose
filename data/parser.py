@@ -83,7 +83,7 @@ def get_st_not_st_measurement(date, substance, measurement, is_standard):
         file_name = PATH_TO_DIR + STANDARD_DATA + DATE[date] + SPLIT_SYMBOL + STANDARD_SUBSTANCE[substance] \
                     + SPLIT_SYMBOL + MEASUREMENT[measurement]
     else:
-        file_name = PATH_TO_DIR + MODEL_DATA_GOOD + DATE[date] + SPLIT_SYMBOL + NON_STANDARD_SUBSTANCE[substance] \
+        file_name = PATH_TO_DIR + NON_STANDARD_DATA + DATE[date] + SPLIT_SYMBOL + NON_STANDARD_SUBSTANCE[substance] \
                     + SPLIT_SYMBOL + MEASUREMENT[measurement]
 
     d = parser(file_name)
@@ -101,20 +101,6 @@ def get_list_of_sensors(path_to_file):
         if s == "":
             break
         values.append(s)
-
-    # else:
-    #     SENSORS_COLUMN = 1
-    #     SENSORS_ROW = 6
-    #     count = 0
-    #     for elem in workbook.sheet_by_index(0).row(SENSORS_ROW):
-    #         count += 1
-    #         if count > SENSORS_COLUMN:
-    #             s = elem.value.split(" ")
-    #             sensor = s[0].encode('utf-8').strip()
-    #             if sensor == "":
-    #                 break
-    #             values.append(sensor)
-
     return values
 
 
@@ -166,14 +152,14 @@ def get_all_st_non_st_data(is_standard, is_reformat=False):
         print DATE[d]
         for s in range(0, len(substance)):
             for m in range(0, len(MEASUREMENT)):
-                alc = get_st_not_st_measurement(d, s, m, is_standard)
+                mes = get_st_not_st_measurement(d, s, m, is_standard)
 
-                if alc is None:
+                if mes is None:
                     continue
                 elif is_reformat:
-                    data.append(reformat_measurement(alc))
+                    data.append(reformat_measurement(mes))
                 else:
-                    data.append(alc)
+                    data.append(mes)
     return data
 
 
