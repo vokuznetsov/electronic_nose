@@ -1,5 +1,5 @@
 import tensorflow as tf
-import data_collection as dc
+import data.data_collection as dc
 import time
 
 INPUT_HEIGHT = 60
@@ -120,12 +120,14 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    # train_and_save(sess, 60, 120, True, "60_last")
+    start_elem = 0
+    end_elem = 60
+    # train_and_save(sess, start_elem, end_elem, True, "60_first")
     sess = restore_model(sess, "60_first")
 
     values = []
     for i in range(0, 10):
-        batch_xs, batch_ys = dc.get_test_data(50, 60, 120)
+        batch_xs, batch_ys = dc.get_test_data(50, start_elem, end_elem)
         # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))

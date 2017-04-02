@@ -1,5 +1,5 @@
 import tensorflow as tf
-import data_collection as dc
+import data.data_collection as dc
 import time
 
 INPUT_HEIGHT = 5
@@ -38,6 +38,7 @@ def max_pool_2x2(x):
 def max_pool_2x1(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 1, 1],
                           strides=[1, 2, 1, 1], padding='SAME')
+
 
 def max_pool_1x2(x):
     return tf.nn.max_pool(x, ksize=[1, 1, 2, 1],
@@ -111,12 +112,14 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    train_and_save(sess, 115, 120, True, "5_last")
-    # sess = restore_model(sess, "5_last")
+    start_elem = 0
+    end_elem = 5
+    # train_and_save(sess, start_elem, end_elem, True, "5_first")
+    sess = restore_model(sess, "5_first")
 
     values = []
     for i in range(0, 10):
-        batch_xs, batch_ys = dc.get_test_data(50, 115, 120)
+        batch_xs, batch_ys = dc.get_test_data(50, start_elem, end_elem)
         # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import data_collection as dc
+import data.data_collection as dc
 import time
 
 INPUT_HEIGHT = 120
@@ -57,7 +57,7 @@ def save_model(sess, place):
     saver = tf.train.Saver()
 
     # Save the variables to disk.
-    save_path = saver.save(sess, "./resource/training_model/"+ str(place) +"/model.ckpt")
+    save_path = saver.save(sess, "./resource/training_model/" + str(place) + "/model.ckpt")
     print("Model saved in file: %s" % save_path)
 
 
@@ -66,7 +66,7 @@ def restore_model(sess, place):
     saver = tf.train.Saver()
 
     # Restore variables from disk.
-    saver.restore(sess, "./resource/training_model/" + str(place) +"/model.ckpt")
+    saver.restore(sess, "./resource/training_model/" + str(place) + "/model.ckpt")
     print("Model restored.")
     return sess
 
