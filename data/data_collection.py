@@ -5,16 +5,18 @@ import tensorflow as tf
 
 STANDARD_PATH = "/normalize_data/standard"
 NON_STANDARD_PATH = "/normalize_data/non_standard"
-ALCOHOL_PATH = "/normalize_data/alcohol"
+MODEL_GOOD_PATH = "/normalize_data/model_good"
+MODEL_BAD_PATH = "/normalize_data/model_bad"
 
 # non_standard_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
 #                                 '/non_stand_alc' + '.npz')["data"]
 # non_standard_non_alc_data = np.load('resource/data.archive/' + NON_STANDARD_PATH +
 #                                     '/non_stand_non_alc' + '.npz')["data"]
 
-standard_data = np.load('resource/' + STANDARD_PATH + '.npz')["data"]
-non_standard_data = np.load('resource/' + NON_STANDARD_PATH + '.npz')["data"]
-alcohol_data = np.load('resource/' + ALCOHOL_PATH + '.npz')["data"]
+# standard_data = np.load('resource/' + STANDARD_PATH + '.npz')["data"]
+# non_standard_data = np.load('resource/' + NON_STANDARD_PATH + '.npz')["data"]
+# model_good_data = np.load('resource/' + MODEL_GOOD_PATH + '.npz')["data"]
+# model_bad_data = np.load('resource/' + MODEL_BAD_PATH + '.npz')["data"]
 
 PERCENT_OF_TRAINING_DATA = 0.7
 
@@ -30,9 +32,9 @@ def normalization(data):
 
 
 def archive_parser_data():
-    standard_data = parser.get_all_standard_data()
+    standard_data = parser.get_model_data()
     non_stadard_data = parser.get_all_non_standard_data()
-    alcohol_data = parser.get_all_alcohol()
+    alcohol_data = parser.get_all_st_non_st_data()
 
     standard_data = normalization(standard_data)
     non_stadard_data = normalization(non_stadard_data)
@@ -40,7 +42,8 @@ def archive_parser_data():
 
     np.savez_compressed('resource/' + STANDARD_PATH, data=standard_data)
     np.savez_compressed('resource/' + NON_STANDARD_PATH, data=non_stadard_data)
-    np.savez_compressed('resource/' + ALCOHOL_PATH, data=alcohol_data)
+    np.savez_compressed('resource/' + MODEL_GOOD_PATH, data=alcohol_data)
+    np.savez_compressed('resource/' + MODEL_BAD_PATH, data=alcohol_data)
 
 
 def archive_non_stand_data_splitted_by_alc():
@@ -149,5 +152,5 @@ def get_test_data_for_all_alc(batch_size):
                 labels = np.append(labels, label, axis=0)
     return data, labels
 
-# archive_parser_data()
+archive_parser_data()
 # archive_non_stand_data_splitted_by_alc()
