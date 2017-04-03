@@ -166,11 +166,11 @@ def get_all_st_non_st_data(is_standard, is_reformat=False):
 # good_model = get_model_data(True)
 # bad_model = get_model_data(False)
 
-standard = get_all_st_non_st_data(True)
-non_standard = get_all_st_non_st_data(False)
+# standard = get_all_st_non_st_data(True)
+# non_standard = get_all_st_non_st_data(False)
 
 
 # print "Good model: " + str(len(good_model))
 # print "Bad model: " + str(len(bad_model))
-print "Standard: " + str(len(standard))
-print "Non standard: " + str(len(non_standard))
+# print "Standard: " + str(len(standard))
+# print "Non standard: " + str(len(non_standard))

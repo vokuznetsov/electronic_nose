@@ -46,9 +46,9 @@ def max_pool_1x2(x):
 
 
 def train_and_save(sess, start_pos, end_pos, is_save, place=""):
-    for i in range(1000):
-        batch_xs, batch_ys = dc.get_train_data(50, start_pos, end_pos)
-        if i % 50 == 0:
+    for i in range(100):
+        batch_xs, batch_ys = dc.get_train_data(10, start_pos, end_pos)
+        if i % 5 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
             print("step %d, training accuracy %.3f" % (i, train_accuracy))
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
@@ -100,26 +100,26 @@ if __name__ == '__main__':
 
     # Training
     y_conv = tf.nn.sigmoid(tf.matmul(h_pool1_flat, W_fc1) + b_fc1)
-    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(targets=y_, logits=y_conv))
+    cross_entropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_, logits=y_conv))
     train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 
     correct_prediction = tf.equal(tf.round(y_conv), y_)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    init = tf.initialize_all_variables()
-    # init = tf.global_variables_initializer()
+    # init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
 
     sess = tf.Session()
     sess.run(init)
 
     start_elem = 0
     end_elem = 5
-    # train_and_save(sess, start_elem, end_elem, True, "5_first")
-    sess = restore_model(sess, "5_first")
+    train_and_save(sess, start_elem, end_elem, True, "5_first")
+    # sess = restore_model(sess, "5_first")
 
     values = []
     for i in range(0, 10):
-        batch_xs, batch_ys = dc.get_test_data(50, start_elem, end_elem)
+        batch_xs, batch_ys = dc.get_test_data(5, start_elem, end_elem)
         # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))
