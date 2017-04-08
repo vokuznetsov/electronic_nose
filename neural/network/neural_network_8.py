@@ -2,12 +2,12 @@ import tensorflow as tf
 import data.data_collection as dc
 import time
 
-INPUT_HEIGHT = 10
+INPUT_HEIGHT = 8
 INPUT_WIDTH = 10
 INPUT_DEPTH = 3
 
-KERNEL_HEIGHT = 5
-KERNEL_WIDTH = 5
+KERNEL_HEIGHT = 4
+KERNEL_WIDTH = 4
 KERNEL_1_IN_CHANNEL = 3
 KERNEL_1_OUT_CHANNEL = 32
 KERNEL_2_OUT_CHANNEL = 64
@@ -93,10 +93,10 @@ if __name__ == '__main__':
     b_conv2 = bias_variable([KERNEL_2_OUT_CHANNEL])
     h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
-    # Fourth layer - fully connected layer (5*5*64) -> (1024)
-    W_fc1 = weight_variable([5 * 5 * KERNEL_2_OUT_CHANNEL, FULLY_CONNECTED_1_OUTPUTS])
+    # Fourth layer - fully connected layer (4*5*64) -> (1024)
+    W_fc1 = weight_variable([4 * 5 * KERNEL_2_OUT_CHANNEL, FULLY_CONNECTED_1_OUTPUTS])
     b_fc1 = bias_variable([FULLY_CONNECTED_1_OUTPUTS])
-    h_pool2_flat = tf.reshape(h_conv2, [-1, 5 * 5 * 64])
+    h_pool2_flat = tf.reshape(h_conv2, [-1, 4 * 5 * 64])
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
     # Fifth layer - fully connected layer (1024) -> (1)
@@ -117,10 +117,10 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(init)
 
-    start_elem = 50
-    end_elem = 60
-    train_and_save(sess, start_elem, end_elem, True, "10_first")
-    # sess = restore_model(sess, "10_first")
+    start_elem = 0
+    end_elem = 8
+    train_and_save(sess, start_elem, end_elem, True, "8_first")
+    # sess = restore_model(sess, "8_first")
 
     values = []
     print("Test model:")

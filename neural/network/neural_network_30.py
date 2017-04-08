@@ -45,7 +45,7 @@ def train_and_save(sess, start_pos, end_pos, is_save, place=""):
         batch_xs, batch_ys = dc.get_train_data(50, start_pos, end_pos)
         if i % 50 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
-            print("step %d, training accuracy %.3f" % (i, train_accuracy))
+            print("%d, %.3f" % (i, train_accuracy))
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
     if is_save:
@@ -123,12 +123,13 @@ if __name__ == '__main__':
     # sess = restore_model(sess, "30_first")
 
     values = []
+    print("Test model:")
     for i in range(0, 10):
         batch_xs, batch_ys = dc.get_test_data(50, start_elem, end_elem)
         # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))
-        print("test accuracy %.3f" % accuracy.eval(session=sess,
+        print("%.3f" % accuracy.eval(session=sess,
                                                    feed_dict={x: batch_xs, y_: batch_ys}))
 
     print("Average accuracy is %.3f" % (sum(values) / len(values)))

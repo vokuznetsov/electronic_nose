@@ -50,7 +50,8 @@ def train_and_save(sess, start_pos, end_pos, is_save, place=""):
         batch_xs, batch_ys = dc.get_train_data(50, start_pos, end_pos)
         if i % 50 == 0:
             train_accuracy = accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys})
-            print("step %d, training accuracy %.3f" % (i, train_accuracy))
+            # print("step %d, training accuracy %.3f" % (i, train_accuracy))
+            print("%d, %.3f" % (i, train_accuracy))
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
     if is_save:
@@ -90,7 +91,7 @@ if __name__ == '__main__':
     b_conv1 = bias_variable([KERNEL_1_OUT_CHANNEL])
     h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
 
-    # Second layer - 2x1 pooling
+    # Second layer - 1x2 pooling
     h_pool1 = max_pool_1x2(h_conv1)
 
     # Third layer - fully connected layer (5*5*32) -> (1)
@@ -118,12 +119,13 @@ if __name__ == '__main__':
     # sess = restore_model(sess, "5_first")
 
     values = []
+    print("Test model:")
     for i in range(0, 10):
         batch_xs, batch_ys = dc.get_test_data(50, start_elem, end_elem)
         # batch_xs, batch_ys = dc.get_test_non_stand_splitted_by_alc_data(10)
         # batch_xs, batch_ys = dc.get_test_data_for_all_alc(20)
         values.append(accuracy.eval(session=sess, feed_dict={x: batch_xs, y_: batch_ys}))
-        print("test accuracy %.3f" % accuracy.eval(session=sess,
+        print("%.3f" % accuracy.eval(session=sess,
                                                    feed_dict={x: batch_xs, y_: batch_ys}))
 
     print("Average accuracy is %.3f" % (sum(values) / len(values)))
